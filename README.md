@@ -21,17 +21,25 @@ Rebuild my comfort with SIEM platforms by simulating real-world security events 
 ## ⚙️ What I Did
 
 1. **Installed Wazuh Server & Agent**
-2. **Enabled File Integrity Monitoring** and designated `testfile.txt` as a watch target.
-3. **Created a test user** (`testuser`) on the system.
-4. **Populated a wordlist** with many invalid entries and one correct password.
-5. **Ran Hydra** to initiate an SSH brute-force attack:
+2. **Installed Hydra** with the `./configure` command and followed the prompts.
+3. **Enabled File Integrity Monitoring** and designated `testfile.txt` as a watch target.
+4. **Updated the Test File** with a simple `echo "ALERT TEST" >> /opt/testwatch.txt` command to append the file.
+5. **Ran the Tail -f Command** on the .json file that was monitoring for file integrity checksum updates:
+   ```bash
+   tail -f /var/ossec/logs/alerts/alerts.json | grep testwatch
+   ```
+<img src= "https://github.com/milanepps1/SIEM-It-To-Believe-It/blob/ea9d02dfc020f291d7e6894aaad446c8f1038fdb/File%20Integrity%20results.png">
+
+6. **Created a test user** (`testuser`) on the system.
+7. **Populated a wordlist** with many invalid entries and one correct password.
+8. **Ran Hydra** to initiate an SSH brute-force attack:
    ```bash
    hydra -l testuser -P /path/to/rockyou.txt ssh://localhost
    ```
-6. **Monitored activity** in both:
+9. **Monitored activity** in both:
    - Wazuh’s **Threat Detection dashboard**
    - Wazuh Agent logs using `tail -f` on `/var/ossec/logs/ossec.log`
-
+<img src= "https://github.com/milanepps1/SIEM-It-To-Believe-It/blob/ea9d02dfc020f291d7e6894aaad446c8f1038fdb/Brute%20force%20results.png">
 ---
 
 ## ⚠️ What Happened
@@ -41,9 +49,9 @@ Rebuild my comfort with SIEM platforms by simulating real-world security events 
   - **authentication failure alerts**
   - **MITRE ATT&CK mappings (T1110 & T1078)**
   - **Rule ID 5763** indicating a brute force login attempt
-- At first, I thought Wazuh **wasn’t updating alerts** in the dashboard—but it turns out `tail -f` was **holding the log file open in read mode**, delaying Wazuh's ability to parse and index those logs.
-- Once I stopped `tail -f` and hit **Refresh**, the brute force alerts populated instantly.
-
+- At first, I thought Wazuh **wasn’t updating alerts** in the dashboard—but it turns out `tail -f` was **holding the log file open in read mode** which delayed Wazuh's ability to parse and index those logs.
+- Once I stopped `tail -f` and hit the **Refresh** button, the brute force alerts populated in the Wazuh dashboard instantly.
+<img src= "https://github.com/milanepps1/SIEM-It-To-Believe-It/blob/ea9d02dfc020f291d7e6894aaad446c8f1038fdb/Wazuh%20Dashboard%20results.png">
 ---
 
 ## ✅ Key Takeaways
